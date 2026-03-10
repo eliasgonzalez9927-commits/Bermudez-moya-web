@@ -79,7 +79,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
             <button 
               key={item.id}
               onClick={() => setActiveView(item.id as AdminView)}
-              className={`w-full flex items-center gap-4 px-6 py-4 rounded-[1.5rem] font-bold transition-all duration-300 ${activeView === item.id ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`w-full flex items-center gap-4 px-6 py-4 rounded-[1.5rem] font-bold transition-all duration-300 ${activeView === item.id ? 'bg-brand-black text-white shadow-xl shadow-black/10' : 'text-brand-gray hover:bg-slate-50'}`}
             >
               {item.icon}
               <span className="text-sm">{item.label}</span>
@@ -90,7 +90,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
         <div className="pt-8 border-t border-slate-100 space-y-3">
           <button 
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-3 bg-slate-100 text-slate-600 px-6 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-red-50 hover:text-red-600 transition-all"
+            className="w-full flex items-center justify-center gap-3 bg-slate-100 text-brand-gray px-6 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-brand-red/5 hover:text-brand-red transition-all"
           >
             Cerrar Sesión
           </button>
@@ -160,15 +160,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                         <p className="text-sm text-slate-400">{l.phone}</p>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-xs font-black text-blue-600 uppercase mb-1">{l.propertyRef || 'Consulta General'}</p>
-                        <p className="text-sm text-slate-500 line-clamp-2">{l.message}</p>
+                        <p className="text-xs font-black text-brand-red uppercase mb-1">{l.propertyRef || 'Consulta General'}</p>
+                        <p className="text-sm text-brand-gray line-clamp-2">{l.message}</p>
                       </td>
                       <td className="px-8 py-6">
                         <select 
                           value={l.status} 
                           onChange={(e) => updateLeadStatus(l.id, e.target.value as Lead['status'])}
                           className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border-none outline-none cursor-pointer ${
-                            l.status === 'new' ? 'bg-blue-50 text-blue-600' :
+                            l.status === 'new' ? 'bg-brand-red/5 text-brand-red' :
                             l.status === 'contacted' ? 'bg-amber-50 text-amber-600' :
                             l.status === 'closed' ? 'bg-emerald-50 text-emerald-600' :
                             'bg-slate-100 text-slate-400'
@@ -215,7 +215,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-slate-50">
                       <span className="text-sm font-bold text-slate-400 uppercase">Propiedades</span>
-                      <span className="font-black text-blue-600">{syncHistory[0].totalSynced}</span>
+                      <span className="font-black text-brand-red">{syncHistory[0].totalSynced}</span>
                     </div>
                     <div className="flex justify-between items-center py-3">
                       <span className="text-sm font-bold text-slate-400 uppercase">Resultado</span>
@@ -237,7 +237,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                         <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Sincronización Exitosa</p>
                         <p className="text-[10px] text-slate-400 font-bold">{new Date(sync.lastSync).toLocaleString()}</p>
                       </div>
-                      <span className="text-[10px] font-black text-blue-600">+{sync.added + sync.updated} cambios</span>
+                      <span className="text-[10px] font-black text-brand-red">+{sync.added + sync.updated} cambios</span>
                     </div>
                   ))}
                   {syncHistory.length === 0 && <p className="text-slate-400 italic text-sm">El historial aparecerá aquí después de sincronizar.</p>}
@@ -261,7 +261,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">Gvamax API Key</label>
                     <input 
                       type="password" 
-                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-brand-black focus:ring-2 focus:ring-brand-red/10 transition-all"
                       placeholder="Ingresa tu API Key de Gvamax"
                       value={gvamaxApiKey}
                       onChange={(e) => setGvamaxApiKey(e.target.value)}
@@ -271,7 +271,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">WhatsApp de Contacto</label>
                     <input 
                       type="text" 
-                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-brand-black focus:ring-2 focus:ring-brand-red/10 transition-all"
                       placeholder="Ej: 5492645813030"
                       value={whatsappNumber}
                       onChange={(e) => setWhatsappNumber(e.target.value)}
@@ -281,7 +281,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
 
                 <button 
                   type="submit"
-                  className="w-full bg-slate-900 text-white px-8 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-100"
+                  className="w-full bg-brand-black text-white px-8 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-red transition-all shadow-xl shadow-black/10"
                 >
                   Guardar Configuración
                 </button>

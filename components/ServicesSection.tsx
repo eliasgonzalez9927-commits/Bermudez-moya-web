@@ -12,18 +12,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, icon }) =
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola! Me interesa el servicio de: ${title}. Me gustaría recibir más información.`)}`;
   
   return (
-    <div className="bg-white p-10 rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-50 flex flex-col items-center text-center group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-      <div className="w-20 h-20 mb-6 flex items-center justify-center text-red-600 transition-transform group-hover:scale-110 duration-500">
+    <div className="bg-white p-10 rounded-[1.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-brand-border flex flex-col items-center text-center group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+      <div className="w-20 h-20 mb-6 flex items-center justify-center text-brand-red transition-transform group-hover:scale-110 duration-500">
         {icon}
       </div>
-      <h3 className="text-xl font-black text-slate-800 mb-3 leading-tight">{title}</h3>
-      {description && <p className="text-slate-500 text-sm leading-relaxed max-w-[280px] mb-8">{description}</p>}
+      <h3 className="text-xl font-bold text-brand-black mb-3 leading-tight">{title}</h3>
+      {description && <p className="text-brand-gray text-sm leading-relaxed max-w-[280px] mb-8">{description}</p>}
       
       <a 
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto bg-slate-900 text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg"
+        className="mt-auto bg-brand-black text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-brand-red transition-all shadow-lg"
       >
         Consultar Ahora
       </a>
@@ -33,17 +33,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, icon }) =
 
 const ServicesSection: React.FC = () => {
   return (
-    <section className="py-24 px-4 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="text-center mb-20">
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <div className="h-px w-12 bg-red-600 opacity-50"></div>
-          <span className="text-red-600 text-xs font-black uppercase tracking-[0.3em]">Nuestros Servicios</span>
-          <div className="h-px w-12 bg-red-600 opacity-50"></div>
+    <div className="bg-brand-light min-h-screen">
+      <section className="py-24 px-4 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="text-center mb-20">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-px w-12 bg-brand-red opacity-50"></div>
+            <span className="text-brand-red text-xs font-bold uppercase tracking-[0.3em]">Nuestros Servicios</span>
+            <div className="h-px w-12 bg-brand-red opacity-50"></div>
+          </div>
+          <h2 className="text-5xl font-black text-brand-black tracking-tight">Expertos en Real Estate</h2>
         </div>
-        <h2 className="text-5xl font-black text-slate-900 tracking-tight">Expertos en Real Estate</h2>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <ServiceCard 
           title="Gestión Inmobiliaria" 
           description="Te acompañamos en todo el proceso de tu operación inmobiliaria con total transparencia."
@@ -100,6 +101,7 @@ const ServicesSection: React.FC = () => {
         />
       </div>
     </section>
+  </div>
   );
 };
 

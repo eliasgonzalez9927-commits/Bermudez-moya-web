@@ -154,4 +154,3 @@ export const getCachedProperties = (): Property[] => {
   }
   return [];
 };
-

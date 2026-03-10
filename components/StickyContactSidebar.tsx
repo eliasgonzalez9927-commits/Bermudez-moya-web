@@ -53,7 +53,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
     <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 sticky top-24">
       <div className="mb-6">
         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Precio de {property.operation}</p>
-        <p className="text-4xl font-black text-blue-600">
+        <p className="text-4xl font-black text-brand-red">
           {property.currency} {property.price.toLocaleString()}
         </p>
       </div>
@@ -86,7 +86,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
               type="text" 
               placeholder="Nombre" 
               required
-              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-red/10"
               value={formData.nombre}
               onChange={(e) => setFormData({...formData, nombre: e.target.value})}
             />
@@ -94,7 +94,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
               type="text" 
               placeholder="Apellido" 
               required
-              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-red/10"
               value={formData.apellido}
               onChange={(e) => setFormData({...formData, apellido: e.target.value})}
             />
@@ -102,7 +102,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
               type="tel" 
               placeholder="Celular" 
               required
-              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-red/10"
               value={formData.celular}
               onChange={(e) => setFormData({...formData, celular: e.target.value})}
             />
@@ -110,7 +110,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
               type="email" 
               placeholder="Email" 
               required
-              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-red/10"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
@@ -118,14 +118,14 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
               placeholder="Mensaje" 
               required
               rows={3}
-              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-100 resize-none"
+              className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-red/10 resize-none"
               value={formData.mensaje}
               onChange={(e) => setFormData({...formData, mensaje: e.target.value})}
             ></textarea>
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-blue-600 transition-all disabled:opacity-50 text-xs uppercase tracking-widest"
+              className="w-full py-3 bg-brand-black text-white font-bold rounded-xl hover:bg-brand-red transition-all disabled:opacity-50 text-xs uppercase tracking-widest"
             >
               {isSubmitting ? 'Enviando...' : 'Enviar Consulta'}
             </button>
