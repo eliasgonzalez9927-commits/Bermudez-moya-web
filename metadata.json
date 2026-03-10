@@ -1,0 +1,7 @@
+{
+  "name": "Prueba Final - Bermudez Moya",
+  "description": "A high-performance real estate platform with automated CRM synchronization, SEO-optimized image management, and e-commerce conversion focus.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
