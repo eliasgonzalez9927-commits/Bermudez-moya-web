@@ -2,9 +2,9 @@
 import { Property, SyncStats, PropertyType, OperationType, PropertyImage } from '../types';
 
 const GVAMAX_API = 'https://gvamax.ar/Api/v3';
-const GVAMAX_TOKEN = import.meta.env.VITE_GVAMAX_TOKEN || 'b495ce63ede0f4efc9eec62cb947c162';
-const GVAMAX_ID = import.meta.env.VITE_GVAMAX_ID || '1253';
-const PROXY = 'https://api.allorigins.win/raw?url=';
+const GVAMAX_TOKEN = 'b495ce63ede0f4efc9eec62cb947c162';
+const GVAMAX_ID = '1253';
+const PROXY = '/api/properties';
 
 const cleanHtml = (text: string): string => {
   if (!text) return '';
@@ -85,8 +85,7 @@ const mapGvamaxToProperty = (item: any): Property => {
 
 export const fetchAllProperties = async (): Promise<Property[]> => {
   try {
-    const apiUrl = `${GVAMAX_API}/inmuebles?token=${GVAMAX_TOKEN}&id=${GVAMAX_ID}&disponible=1&page=1`;
-    const url = `${PROXY}${encodeURIComponent(apiUrl)}`;
+    const url = `${PROXY}?disponible=1&page=1`;
     const firstPageRes = await fetch(url);
     if (!firstPageRes.ok) {
       throw new Error(`HTTP Error ${firstPageRes.status}: ${firstPageRes.statusText}`);
@@ -110,8 +109,7 @@ export const fetchAllProperties = async (): Promise<Property[]> => {
     if (totalPages > 1) {
       const pagePromises = [];
       for (let i = 2; i <= totalPages; i++) {
-        const pageApiUrl = `${GVAMAX_API}/inmuebles?token=${GVAMAX_TOKEN}&id=${GVAMAX_ID}&disponible=1&page=${i}`;
-        const pageUrl = `${PROXY}${encodeURIComponent(pageApiUrl)}`;
+        const pageUrl = `${PROXY}?disponible=1&page=${i}`;
         pagePromises.push(
           fetch(pageUrl).then(res => res.json())
         );
@@ -156,3 +154,4 @@ export const getCachedProperties = (): Property[] => {
   }
   return [];
 };
+
