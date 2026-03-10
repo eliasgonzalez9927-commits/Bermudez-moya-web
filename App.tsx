@@ -12,6 +12,7 @@ import StickyContactSidebar from './components/StickyContactSidebar';
 import ServicesSection from './components/ServicesSection';
 import ContactSection from './components/ContactSection';
 import AboutUsSection from './components/AboutUsSection';
+import HeroBanner from './components/HeroBanner';
 
 type ViewType = 'home' | 'services' | 'admin' | 'nosotros' | 'contacto';
 type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';
@@ -49,7 +50,7 @@ const App: React.FC = () => {
           setSyncError('');
         })
         .catch(err => {
-          setSyncError(`Error al conectar con Gvamax: ${err.message}`);
+          setSyncError(`No hay propiedades disponibles en este momento.`);
           console.error('Sync error:', err);
         })
         .finally(() => setIsSyncing(false));
@@ -170,7 +171,7 @@ const App: React.FC = () => {
                 <div class="p-1 min-w-[150px]">
                   <img src="${p.images[0]?.url}" class="w-full h-24 object-cover rounded-xl mb-2"/>
                   <h4 class="font-black text-slate-900 text-xs leading-tight mb-1">${p.title}</h4>
-                  <p class="text-blue-600 font-black text-xs">${p.currency} ${p.price.toLocaleString()}</p>
+                  <p class="text-brand-red font-black text-xs">${p.currency} ${p.price.toLocaleString()}</p>
                 </div>
               `);
             return marker;
@@ -225,7 +226,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <button 
             onClick={() => setSelectedPropertyId(null)}
-            className="group flex items-center gap-2 text-blue-600 font-bold mb-8 hover:text-blue-800 transition-colors"
+            className="group flex items-center gap-2 text-brand-red font-bold mb-8 hover:text-red-800 transition-colors"
           >
             <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -234,7 +235,7 @@ const App: React.FC = () => {
           </button>
 
           <div className="mb-12">
-            <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-3 h-[600px] rounded-[3rem] overflow-hidden shadow-2xl">
+            <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-3 h-[600px] rounded-[2rem] overflow-hidden shadow-2xl">
               <div className="col-span-2 row-span-2 relative group cursor-pointer overflow-hidden">
                 <img src={displayImages[0]?.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Principal" />
               </div>
@@ -250,7 +251,7 @@ const App: React.FC = () => {
             </div>
             <div className="md:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth custom-scrollbar pb-4 -mx-4 px-4">
               {displayImages.map((img, idx) => (
-                <div key={idx} className="min-w-[85vw] aspect-[4/3] snap-center rounded-[2rem] overflow-hidden bg-slate-100 shadow-xl">
+                <div key={idx} className="min-w-[85vw] aspect-[4/3] snap-center rounded-[1.5rem] overflow-hidden bg-brand-light shadow-xl">
                    <img src={img.url} className="w-full h-full object-cover" alt="" />
                 </div>
               ))}
@@ -261,18 +262,18 @@ const App: React.FC = () => {
             <div className="lg:col-span-2 space-y-12">
               <div>
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">{selectedProperty.operation}</span>
-                  <span className="bg-slate-900 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">{selectedProperty.type}</span>
+                  <span className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.operation}</span>
+                  <span className="bg-brand-black text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.type}</span>
                 </div>
-                <h1 className="text-5xl font-black text-slate-900 mb-4 tracking-tight leading-tight">{selectedProperty.title}</h1>
-                <p className="text-2xl text-slate-500 flex items-center gap-3 font-light">
-                   <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                <h1 className="text-5xl font-black text-brand-black mb-4 tracking-tight leading-tight">{selectedProperty.title}</h1>
+                <p className="text-2xl text-brand-gray flex items-center gap-3 font-light">
+                   <svg className="w-6 h-6 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
                   {selectedProperty.location.address}, {selectedProperty.neighborhood || 'Barrio'}
                 </p>
               </div>
               <div className="prose prose-slate max-w-none">
-                <h3 className="text-2xl font-black text-slate-900 mb-6">Descripción</h3>
-                <p className="text-slate-600 text-lg leading-relaxed whitespace-pre-line">{selectedProperty.description}</p>
+                <h3 className="text-2xl font-black text-brand-black mb-6">Descripción</h3>
+                <p className="text-brand-gray text-lg leading-relaxed whitespace-pre-line">{selectedProperty.description}</p>
               </div>
             </div>
             <div className="hidden lg:block relative"><StickyContactSidebar property={selectedProperty} /></div>
@@ -282,18 +283,16 @@ const App: React.FC = () => {
     }
 
     return (
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <header className="mb-12 text-center">
-          <h1 className="text-7xl font-black text-slate-900 mb-6 tracking-tighter leading-none">Encuentra tu lugar <br/><span className="text-blue-600">Bermudez-Moya</span></h1>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed">Propiedades exclusivas sincronizadas en tiempo real con CRM Gvamax.</p>
-        </header>
+      <div className="animate-in fade-in duration-700">
+        <HeroBanner onNavigate={(v) => { setView(v as ViewType); setSelectedPropertyId(null); }} />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="space-y-4 mb-12">
-          <div className="bg-white p-4 md:p-6 rounded-[3rem] shadow-2xl shadow-blue-900/5 border border-slate-100">
+          <div className="bg-white p-4 md:p-6 rounded-[3rem] shadow-2xl shadow-brand-red/5 border border-slate-100">
             <div className="flex flex-col gap-6">
               {/* Main Search Row */}
               <div className="flex flex-col lg:flex-row gap-3 items-center w-full">
                 <div className="flex-[4] relative w-full">
-                  <input type="text" placeholder="Barrio, calle o referencia..." className="w-full pl-6 pr-6 py-5 bg-slate-50 border border-blue-50 rounded-[2rem] outline-none text-slate-700 font-medium" value={search} onChange={(e) => setSearch(e.target.value)} />
+                  <input type="text" placeholder="Barrio, calle o referencia..." className="w-full pl-6 pr-6 py-5 bg-slate-50 border border-brand-border rounded-[2rem] outline-none text-brand-black font-medium" value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
                 <div className="flex flex-1 gap-2 w-full lg:w-auto">
                   <select className="flex-1 px-6 py-5 bg-slate-50 border-none rounded-[2rem] outline-none font-bold text-slate-600 text-sm appearance-none text-center" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)}>
@@ -307,7 +306,7 @@ const App: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`p-5 rounded-[2rem] transition-all ${showFilters ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                  className={`p-5 rounded-[2rem] transition-all ${showFilters ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -315,14 +314,10 @@ const App: React.FC = () => {
                 </button>
               </div>
 
-              {syncError && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-2xl text-sm font-medium">
-                  ⚠️ {syncError}
-                </div>
-              )}
-              {isSyncing && (
-                <div className="text-center text-slate-400 text-sm py-8">
-                  Sincronizando propiedades con Gvamax...
+              {syncError && !isSyncing && properties.length === 0 && (
+                <div className="text-center py-20">
+                  <p className="text-slate-400 text-lg">No hay propiedades disponibles en este momento.</p>
+                  <p className="text-slate-300 text-sm mt-2">Intentá nuevamente más tarde.</p>
                 </div>
               )}
 
@@ -354,7 +349,7 @@ const App: React.FC = () => {
                           onClick={() => setRoomsFilter(num === '5+' ? 5 : Number(num))}
                           className={`flex-1 py-3 rounded-2xl text-sm font-bold transition-all ${
                             (num === '5+' ? roomsFilter === 5 : roomsFilter === num)
-                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                              ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20'
                               : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
                           }`}
                         >
@@ -365,7 +360,7 @@ const App: React.FC = () => {
                         onClick={() => setRoomsFilter('All')}
                         className={`px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                           roomsFilter === 'All'
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                            ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20'
                             : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
                         }`}
                       >
@@ -378,7 +373,7 @@ const App: React.FC = () => {
                   <div className="lg:col-span-2 space-y-3">
                     <div className="flex justify-between items-center px-2">
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rango de Precio (USD)</span>
-                      <div className="flex gap-2 text-xs font-black text-blue-600">
+                      <div className="flex gap-2 text-xs font-black text-brand-red">
                         <span>${priceRange[0].toLocaleString()}</span>
                         <span className="text-slate-300">-</span>
                         <span>${priceRange[1].toLocaleString()}</span>
@@ -391,10 +386,10 @@ const App: React.FC = () => {
                         max={absolutePriceRange.max}
                         value={priceRange}
                         onChange={(val) => setPriceRange(val as [number, number])}
-                        trackStyle={[{ backgroundColor: '#2563eb', height: 4 }]}
+                        trackStyle={[{ backgroundColor: '#C21C28', height: 4 }]}
                         handleStyle={[
-                          { borderColor: '#2563eb', height: 18, width: 18, marginTop: -7, backgroundColor: '#fff', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', opacity: 1 },
-                          { borderColor: '#2563eb', height: 18, width: 18, marginTop: -7, backgroundColor: '#fff', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', opacity: 1 }
+                          { borderColor: '#C21C28', height: 18, width: 18, marginTop: -7, backgroundColor: '#fff', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', opacity: 1 },
+                          { borderColor: '#C21C28', height: 18, width: 18, marginTop: -7, backgroundColor: '#fff', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', opacity: 1 }
                         ]}
                         railStyle={{ backgroundColor: '#e2e8f0', height: 4 }}
                       />
@@ -411,7 +406,7 @@ const App: React.FC = () => {
                           onClick={() => handleAmenityToggle(amenity)}
                           className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${
                             selectedAmenities.includes(amenity)
-                              ? 'bg-blue-50 border-blue-200 text-blue-600'
+                              ? 'bg-brand-red/5 border-brand-red/20 text-brand-red'
                               : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
                           }`}
                         >
@@ -442,12 +437,19 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredAndSortedProperties.map(p => <PropertyCard key={p.id} property={p} onClick={setSelectedPropertyId} />)}
+          {isSyncing ? (
+            [1,2,3,4,5,6].map(i => (
+              <div key={i} className="rounded-3xl bg-gray-100 animate-pulse h-80" />
+            ))
+          ) : (
+            filteredAndSortedProperties.map(p => <PropertyCard key={p.id} property={p} onClick={setSelectedPropertyId} />)
+          )}
         </div>
         <WhatsAppButton propertyRef="HOME" propertyTitle="Inmobiliaria" variant="floating" />
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const renderContent = () => {
     if (view === 'admin') {
@@ -463,36 +465,68 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
-      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-[100] border-b border-slate-100">
+    <div className="min-h-screen bg-white">
+      <nav className="bg-white sticky top-0 z-[100] border-b border-brand-border">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-24">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('home'); setSelectedPropertyId(null); setShowMap(false);}}>
-            <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-xl shadow-red-200">BM</div>
-            <span className="font-black text-slate-900 tracking-tighter leading-none text-xl hidden md:block uppercase">BERMUDEZ-MOYA</span>
+            <div style={{
+              width: '44px',
+              height: '44px', 
+              backgroundColor: '#C21C28',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: "'Barlow', sans-serif",
+              fontWeight: 900,
+              fontSize: '18px',
+              color: 'white',
+              letterSpacing: '-1px'
+            }}>BM</div>
+            <div>
+              <div style={{fontFamily:"'Barlow',sans-serif", fontWeight:900, fontSize:'16px', color:'#1D1D1B', letterSpacing:'2px'}}>BERMUDEZ MOYA</div>
+              <div style={{fontFamily:"'Barlow',sans-serif", fontWeight:300, fontSize:'10px', color:'#4C4C4C', letterSpacing:'3px'}}>GESTIÓN INMOBILIARIA</div>
+            </div>
           </div>
           <div className="flex items-center gap-8">
             <div className="hidden md:flex gap-8">
-               <button onClick={() => {setView('home'); setSelectedPropertyId(null);}} className={`text-xs font-black uppercase tracking-widest ${view === 'home' ? 'text-red-600' : 'text-slate-400'}`}>Propiedades</button>
-               <button onClick={() => setView('services')} className={`text-xs font-black uppercase tracking-widest ${view === 'services' ? 'text-red-600' : 'text-slate-400'}`}>Servicios</button>
-               <button onClick={() => setView('contacto')} className={`text-xs font-black uppercase tracking-widest ${view === 'contacto' ? 'text-red-600' : 'text-slate-400'}`}>Contacto</button>
-               <button onClick={() => setView('nosotros')} className={`text-xs font-black uppercase tracking-widest ${view === 'nosotros' ? 'text-red-600' : 'text-slate-400'}`}>Nosotros</button>
+               <button onClick={() => {setView('home'); setSelectedPropertyId(null);}} className={`text-xs font-bold uppercase tracking-widest transition-colors ${view === 'home' ? 'text-brand-red' : 'text-brand-gray hover:text-brand-red'}`}>Propiedades</button>
+               <button onClick={() => setView('services')} className={`text-xs font-bold uppercase tracking-widest transition-colors ${view === 'services' ? 'text-brand-red' : 'text-brand-gray hover:text-brand-red'}`}>Servicios</button>
+               <button onClick={() => setView('contacto')} className={`text-xs font-bold uppercase tracking-widest transition-colors ${view === 'contacto' ? 'text-brand-red' : 'text-brand-gray hover:text-brand-red'}`}>Contacto</button>
+               <button onClick={() => setView('nosotros')} className={`text-xs font-bold uppercase tracking-widest transition-colors ${view === 'nosotros' ? 'text-brand-red' : 'text-brand-gray hover:text-brand-red'}`}>Nosotros</button>
             </div>
-            <button onClick={handleAdminAccess} className={`text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl transition-all ${view === 'admin' ? 'bg-slate-900 text-white shadow-xl' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>Panel Admin</button>
+            <button onClick={handleAdminAccess} className={`text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-xl transition-all border-2 ${view === 'admin' ? 'bg-brand-black text-white border-brand-black' : 'bg-transparent border-brand-black text-brand-black hover:bg-brand-black hover:text-white'}`}>Panel Admin</button>
           </div>
         </div>
       </nav>
       <main className="pb-20">{renderContent()}</main>
-      <footer className="bg-slate-900 text-slate-400 py-24">
+      <footer className="bg-brand-black text-brand-gray py-24">
         <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-20">
           <div className="col-span-1 md:col-span-2 space-y-8">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center font-black text-white shadow-lg">BM</div>
-                <span className="font-black tracking-tighter text-white text-2xl">BERMUDEZ-MOYA</span>
+                <div style={{
+                  width: '44px',
+                  height: '44px', 
+                  backgroundColor: '#C21C28',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: "'Barlow', sans-serif",
+                  fontWeight: 900,
+                  fontSize: '18px',
+                  color: 'white',
+                  letterSpacing: '-1px'
+                }}>BM</div>
+                <div>
+                  <div style={{fontFamily:"'Barlow',sans-serif", fontWeight:900, fontSize:'16px', color:'white', letterSpacing:'2px'}}>BERMUDEZ MOYA</div>
+                  <div style={{fontFamily:"'Barlow',sans-serif", fontWeight:300, fontSize:'10px', color:'rgba(255,255,255,0.6)', letterSpacing:'3px'}}>GESTIÓN INMOBILIARIA</div>
+                </div>
               </div>
-              <p className="max-w-md text-lg leading-relaxed font-light">Innovación inmobiliaria con tecnología avanzada de sincronización Gvamax.</p>
+              <p className="max-w-md text-lg leading-relaxed font-light">Innovación inmobiliaria con las mejores propiedades de San Juan y la región.</p>
           </div>
           <div className="md:col-span-2 text-right">
-             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">Powered by High-Sync Tech</p>
+             <p className="text-[10px] font-bold text-brand-gray uppercase tracking-[0.4em] mb-4">Bermudez Moya © 2025 · Todos los derechos reservados</p>
           </div>
         </div>
       </footer>
@@ -501,3 +535,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
