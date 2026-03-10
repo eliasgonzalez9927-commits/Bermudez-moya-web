@@ -840,3 +840,30 @@ export const MOCK_LEADS: Lead[] = [
     source: 'web_form'
   }
 ];
+
+export const BANNERS = [
+  {
+    id: '1',
+    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1920&auto=format&fit=crop',
+    title: 'Encontrá tu próximo hogar',
+    subtitle: 'Propiedades exclusivas en San Juan y toda la región',
+    ctaText: 'Ver Propiedades',
+    ctaAction: 'home'
+  },
+  {
+    id: '2', 
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1920&auto=format&fit=crop',
+    title: 'Invertí con confianza',
+    subtitle: 'Más de 10 años acompañando inversiones inmobiliarias',
+    ctaText: 'Conocer Servicios',
+    ctaAction: 'services'
+  },
+  {
+    id: '3',
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop', 
+    title: 'Vendé o alquilá tu propiedad',
+    subtitle: 'Te acompañamos en cada paso del proceso',
+    ctaText: 'Contactanos',
+    ctaAction: 'contacto'
+  }
+];
