@@ -3,7 +3,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { WHATSAPP_NUMBER } from '../constants';
 import { sendLeadToGvamax } from '../services/leadService';
 
-const ContactSection: React.FC = () => {
+interface ContactSectionProps {
+  content?: any;
+}
+
+const ContactSection: React.FC<ContactSectionProps> = ({ content }) => {
+  const contactoData = content?.contacto || {
+    titulo: "Hablemos de tu próximo hogar",
+    subtitulo: "Nuestro equipo de expertos está listo para asesorarte en cada paso de tu inversión inmobiliaria.",
+    direccion: "Gral. José María Paz Oeste 640, 1er Piso Oficina 14 y 15, San Juan, Argentina",
+    email: "bermudezmoyap@gmail.com",
+    whatsapp: WHATSAPP_NUMBER,
+    mapa: { lat: -31.5369, lng: -68.5251 }
+  };
+
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -19,8 +32,7 @@ const ContactSection: React.FC = () => {
 
   useEffect(() => {
     // Inicializar el mapa de la oficina
-    // Coordenadas de la oficina: Gral. José María Paz Oeste 640, San Juan
-    const officeCoords: [number, number] = [-31.5369, -68.5251];
+    const officeCoords: [number, number] = [contactoData.mapa?.lat || -31.5369, contactoData.mapa?.lng || -68.5251];
     
     setTimeout(() => {
       const L = (window as any).L;
@@ -45,7 +57,7 @@ const ContactSection: React.FC = () => {
           .bindPopup(`
             <div class="p-2 text-center">
               <p class="font-black text-slate-900 text-sm mb-1">Bermudez-Moya Group</p>
-              <p class="text-xs text-slate-500">Gral. José María Paz Oeste 640</p>
+              <p class="text-xs text-slate-500">${contactoData.direccion}</p>
             </div>
           `)
           .openPopup();
@@ -58,7 +70,7 @@ const ContactSection: React.FC = () => {
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [contactoData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +97,7 @@ const ContactSection: React.FC = () => {
     }
   };
 
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola! Estoy en la sección de contacto de la web y me gustaría realizar una consulta.")}`;
+  const waUrl = `https://wa.me/${contactoData.whatsapp || WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola! Estoy en la sección de contacto de la web y me gustaría realizar una consulta.")}`;
 
   return (
     <div className="bg-brand-light min-h-screen">
@@ -98,9 +110,11 @@ const ContactSection: React.FC = () => {
         
         <div className="relative z-10 max-w-7xl mx-auto text-center">
           <span className="inline-block px-4 py-1 bg-brand-red/10 text-brand-red text-[10px] font-bold uppercase tracking-[0.3em] rounded-full mb-6">Estamos para ayudarte</span>
-          <h1 className="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">Hablemos de tu <br/><span className="text-brand-red">próximo hogar</span></h1>
+          <h1 className="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+            {contactoData.titulo.split(' ').slice(0, -2).join(' ')} <br/><span className="text-brand-red">{contactoData.titulo.split(' ').slice(-2).join(' ')}</span>
+          </h1>
           <p className="text-slate-400 text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Nuestro equipo de expertos está listo para asesorarte en cada paso de tu inversión inmobiliaria.
+            {contactoData.subtitulo}
           </p>
         </div>
       </div>
@@ -115,8 +129,8 @@ const ContactSection: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
               </div>
               <h3 className="text-xl font-bold text-brand-black mb-2">Visítanos</h3>
-              <p className="text-brand-gray font-medium text-sm leading-relaxed">
-                Gral. José María Paz Oeste 640,<br />1er Piso Oficina 14 y 15,<br />San Juan, Argentina
+              <p className="text-brand-gray font-medium text-sm leading-relaxed whitespace-pre-line">
+                {contactoData.direccion}
               </p>
             </div>
 
@@ -125,7 +139,7 @@ const ContactSection: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               </div>
               <h3 className="text-xl font-bold text-brand-black mb-2">Escríbenos</h3>
-              <p className="text-brand-gray font-medium text-sm">bermudezmoyap@gmail.com</p>
+              <p className="text-brand-gray font-medium text-sm">{contactoData.email}</p>
               <p className="text-brand-gray/60 text-xs mt-1">Respondemos en menos de 24hs</p>
             </div>
 
@@ -275,7 +289,7 @@ const ContactSection: React.FC = () => {
                 </div>
              </div>
              <a 
-              href="https://maps.google.com/?q=Gral.+Jose+Maria+Paz+Oeste+640,+San+Juan" 
+              href={`https://maps.google.com/?q=${encodeURIComponent(contactoData.direccion)}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-8 py-4 bg-brand-light hover:bg-brand-border text-brand-black font-bold uppercase text-[10px] tracking-widest rounded-2xl transition-all"

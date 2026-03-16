@@ -35,13 +35,16 @@ const mapGvamaxToProperty = (item: any): Property => {
   const images: PropertyImage[] = [];
   if (item.media?.images) {
     Object.values(item.media.images).forEach((img: any, index: number) => {
-      images.push({
-        id: img.id || `img-${index}`,
-        url: img.url,
-        fileName: img.name || '',
-        altText: item.tituloComercial || '',
-        order: index
-      });
+      const url = typeof img === 'string' ? img : img?.url || '';
+      if (url) {
+        images.push({
+          id: `img-${index}`,
+          url,
+          fileName: '',
+          altText: item.tituloComercial || '',
+          order: index
+        });
+      }
     });
   }
 
@@ -53,7 +56,7 @@ const mapGvamaxToProperty = (item: any): Property => {
     description: cleanHtml(item.descripcion),
     type: mapPropertyType(item.tipoInmueble || ''),
     operation: mapOperationType(item.tipoOperacion || ''),
-    price: parseFloat(String(item.precio || '0').replace(/[^0-9.]/g, '')) || 0,
+    price: parseInt(String(item.precio || '0').replace(/[^0-9]/g, '')) || 0,
     currency: item.moneda === 'P' ? 'ARS' : 'USD',
     neighborhood: item.ubicacion?.barrio || '',
     location: {
@@ -104,7 +107,7 @@ export const fetchAllProperties = async (): Promise<Property[]> => {
     }
 
     const totalPages = firstPageData.content.totalpages || 1;
-    let allItems = [...(firstPageData.content.inmuebles || [])];
+    let allItems = [...(firstPageData.propiedades || [])];
 
     if (totalPages > 1) {
       const pagePromises = [];
@@ -116,8 +119,8 @@ export const fetchAllProperties = async (): Promise<Property[]> => {
       }
       const otherPagesData = await Promise.all(pagePromises);
       otherPagesData.forEach(data => {
-        if (data.content?.inmuebles) {
-          allItems = [...allItems, ...data.content.inmuebles];
+        if (data.propiedades) {
+          allItems = [...allItems, ...data.propiedades];
         }
       });
     }

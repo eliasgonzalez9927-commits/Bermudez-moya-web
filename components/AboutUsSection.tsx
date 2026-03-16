@@ -60,7 +60,77 @@ const StaffCard: React.FC<StaffCardProps> = ({ name, role, image, links }) => (
   </div>
 );
 
-const AboutUsSection: React.FC = () => {
+interface AboutUsSectionProps {
+  content?: any;
+}
+
+const AboutUsSection: React.FC<AboutUsSectionProps> = ({ content }) => {
+  const nosotrosData = content?.nosotros || {
+    titulo: "Transformamos sueños en realidades tangibles",
+    subtitulo: "Somos Bermudez-Moya Group, una organización inmobiliaria moderna que combina la pasión por el servicio con tecnología de vanguardia.",
+    historia: "Bermudez-Moya nació de la visión compartida de sus fundadores por profesionalizar y dar transparencia al mercado inmobiliario de San Juan. Entendemos que una propiedad no es solo ladrillos, es el proyecto de vida de una persona, de una familia o el fruto del esfuerzo de un inversor. Utilizamos herramientas de CRM avanzadas y marketing digital de precisión para asegurar que cada propiedad encuentre a su dueño ideal en el menor tiempo posible.",
+    stats: [
+      { numero: "10+", label: "Años de Experiencia" },
+      { numero: "500+", label: "Operaciones Exitosas" },
+      { numero: "24/7", label: "Asesoramiento Online" },
+      { numero: "100%", label: "Clientes Satisfechos" }
+    ],
+    valores: [
+      {
+        titulo: "Transparencia",
+        descripcion: "Información clara y precisa en cada etapa de la operación, sin sorpresas.",
+        icono: "eye"
+      },
+      {
+        titulo: "Innovación",
+        descripcion: "Aplicamos tecnología Gvamax para sincronización y marketing de alta precisión.",
+        icono: "bolt"
+      },
+      {
+        titulo: "Compromiso",
+        descripcion: "No solo vendemos propiedades, construimos relaciones de confianza a largo plazo.",
+        icono: "heart"
+      },
+      {
+        titulo: "Excelencia",
+        descripcion: "Cuidamos cada detalle estético y legal para garantizar una experiencia premium.",
+        icono: "star"
+      }
+    ],
+    equipo: [
+      {
+        nombre: "Sebastian Bermudez",
+        cargo: "Co - fundador de Bermudez Moya, Corredor inmobiliario.",
+        foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
+      },
+      {
+        nombre: "Valeria Moya",
+        cargo: "Co - fundadora de Bermudez Moya, Lic. en Comercio Internacional",
+        foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop"
+      },
+      {
+        nombre: "Pablo Denis Martin",
+        cargo: "Martillero y corredor inmobiliario.",
+        foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop"
+      }
+    ]
+  };
+
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'eye':
+        return <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>;
+      case 'bolt':
+        return <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
+      case 'heart':
+        return <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>;
+      case 'star':
+        return <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" /></svg>;
+      default:
+        return <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+    }
+  };
+
   return (
     <div className="bg-brand-light min-h-screen">
       {/* Hero Section */}
@@ -77,10 +147,10 @@ const AboutUsSection: React.FC = () => {
             <div className="h-px w-12 bg-brand-red"></div>
           </div>
           <h1 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-none">
-            Transformamos sueños en <br/> <span className="text-brand-red">realidades tangibles</span>
+            {nosotrosData.titulo}
           </h1>
           <p className="text-slate-400 text-xl max-w-3xl mx-auto font-light leading-relaxed">
-            Somos Bermudez-Moya Group, una organización inmobiliaria moderna que combina la pasión por el servicio con tecnología de vanguardia.
+            {nosotrosData.subtitulo}
           </p>
         </div>
       </section>
@@ -90,33 +160,20 @@ const AboutUsSection: React.FC = () => {
         <div className="bg-white rounded-[1.5rem] p-10 md:p-20 shadow-2xl border border-brand-border flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/2 space-y-8">
             <h2 className="text-4xl font-black text-brand-black leading-tight">Nuestra Historia es <br/> tu seguridad</h2>
-            <p className="text-brand-gray text-lg leading-relaxed font-medium">
-              Bermudez-Moya nació de la visión compartida de sus fundadores por profesionalizar y dar transparencia al mercado inmobiliario de San Juan. Entendemos que una propiedad no es solo ladrillos, es el proyecto de vida de una persona, de una familia o el fruto del esfuerzo de un inversor.
-            </p>
-            <p className="text-brand-gray text-lg leading-relaxed font-medium">
-              Utilizamos herramientas de CRM avanzadas y marketing digital de precisión para asegurar que cada propiedad encuentre a su dueño ideal en el menor tiempo posible.
-            </p>
+            <div className="text-brand-gray text-lg leading-relaxed font-medium whitespace-pre-line">
+              {nosotrosData.historia}
+            </div>
             <div className="pt-4">
               <button onClick={() => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank')} className="bg-brand-black text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-brand-red transition-all shadow-xl">Contáctanos Hoy</button>
             </div>
           </div>
           <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-            <div className="bg-brand-light p-10 rounded-[1.5rem] text-center border border-brand-border">
-              <p className="text-4xl font-black text-brand-black mb-1">10+</p>
-              <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Años de Experiencia</p>
-            </div>
-            <div className="bg-brand-light p-10 rounded-[1.5rem] text-center border border-brand-border">
-              <p className="text-4xl font-black text-brand-red mb-1">500+</p>
-              <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Operaciones Exitosas</p>
-            </div>
-            <div className="bg-brand-light p-10 rounded-[1.5rem] text-center border border-brand-border">
-              <p className="text-4xl font-black text-brand-red mb-1">24/7</p>
-              <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Asesoramiento Online</p>
-            </div>
-            <div className="bg-brand-light p-10 rounded-[1.5rem] text-center border border-brand-border">
-              <p className="text-4xl font-black text-brand-black mb-1">100%</p>
-              <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Clientes Satisfechos</p>
-            </div>
+            {nosotrosData.stats?.map((stat: any, i: number) => (
+              <div key={i} className="bg-brand-light p-10 rounded-[1.5rem] text-center border border-brand-border">
+                <p className={`text-4xl font-black mb-1 ${i === 1 || i === 2 ? 'text-brand-red' : 'text-brand-black'}`}>{stat.numero}</p>
+                <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -128,26 +185,14 @@ const AboutUsSection: React.FC = () => {
           <h3 className="text-4xl font-black text-brand-black">Nuestros Valores Fundamentales</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <ValueCard 
-            title="Transparencia" 
-            description="Información clara y precisa en cada etapa de la operación, sin sorpresas."
-            icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}
-          />
-          <ValueCard 
-            title="Innovación" 
-            description="Aplicamos tecnología Gvamax para sincronización y marketing de alta precisión."
-            icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
-          />
-          <ValueCard 
-            title="Compromiso" 
-            description="No solo vendemos propiedades, construimos relaciones de confianza a largo plazo."
-            icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>}
-          />
-          <ValueCard 
-            title="Excelencia" 
-            description="Cuidamos cada detalle estético y legal para garantizar una experiencia premium."
-            icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" /></svg>}
-          />
+          {nosotrosData.valores?.map((valor: any, i: number) => (
+            <ValueCard 
+              key={i}
+              title={valor.titulo} 
+              description={valor.descripcion}
+              icon={getIcon(valor.icono)}
+            />
+          ))}
         </div>
       </section>
 
@@ -160,37 +205,17 @@ const AboutUsSection: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <StaffCard 
-              name="Sebastian Bermudez"
-              role={["Co - fundador de Bermudez Moya", "Corredor inmobiliario."]}
-              image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
-              links={{
-                linkedin: "https://linkedin.com",
-                instagram: "https://instagram.com",
-                whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`
-              }}
-            />
-            <StaffCard 
-              name="Valeria Moya"
-              role={[
-                "Co - fundadora de Bermudez Moya", 
-                "Lic. en Comercio Internacional"
-              ]}
-              image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop"
-              links={{
-                instagram: "https://instagram.com",
-                whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`
-              }}
-            />
-            <StaffCard 
-              name="Pablo Denis Martin"
-              role={["Martillero y corredor inmobiliario."]}
-              image="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop"
-              links={{
-                instagram: "https://instagram.com",
-                whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`
-              }}
-            />
+            {nosotrosData.equipo?.map((member: any, i: number) => (
+              <StaffCard 
+                key={i}
+                name={member.nombre}
+                role={[member.cargo]}
+                image={member.foto}
+                links={{
+                  whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`
+                }}
+              />
+            ))}
           </div>
         </div>
       </section>

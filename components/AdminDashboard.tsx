@@ -1,27 +1,39 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Property, SyncStats, Lead, User } from '../types';
-import { MOCK_LEADS } from '../constants';
 import { syncWithGvamax, getCachedProperties } from '../services/syncService';
+import { getLocalLeads, updateLeadStatusLocally } from '../services/leadStorageService';
+import { getStoredUsers, updateUserProfile } from '../services/userStorageService';
 
-type AdminView = 'overview' | 'leads' | 'sync' | 'settings';
+type AdminView = 'overview' | 'leads' | 'sync' | 'settings' | 'perfil';
 
 interface AdminDashboardProps {
   currentUser: User;
   onLogout: () => void;
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
   properties: Property[];
   setProperties: React.Dispatch<React.SetStateAction<Property[]>>;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, properties, setProperties }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, setCurrentUser, properties, setProperties }) => {
   const [activeView, setActiveView] = useState<AdminView>('overview');
-  const [leads, setLeads] = useState<Lead[]>(MOCK_LEADS);
+  const [leads, setLeads] = useState<Lead[]>(getLocalLeads());
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncHistory, setSyncHistory] = useState<SyncStats[]>([]);
-  
+
   // Settings state
   const [gvamaxApiKey, setGvamaxApiKey] = useState('b495ce63ede0f4efc9eec62cb947c162');
   const [whatsappNumber, setWhatsappNumber] = useState(localStorage.getItem('whatsapp_number') || '5492645813030');
+
+  // Profile state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileName, setProfileName] = useState(currentUser.name);
+  const [profileUsername, setProfileUsername] = useState(currentUser.username);
+  const [avatarPreview, setAvatarPreview] = useState<string>(currentUser.avatar || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileMsg, setProfileMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
   const stats = useMemo(() => {
     return {
@@ -46,7 +58,44 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
   };
 
   const updateLeadStatus = (leadId: string, newStatus: Lead['status']) => {
+    updateLeadStatusLocally(leadId, newStatus);
     setLeads(leads.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatarPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileMsg(null);
+    const updates: Partial<Omit<User, 'id'>> = { name: profileName, username: profileUsername };
+    if (avatarPreview) updates.avatar = avatarPreview;
+    if (newPassword || currentPassword || confirmPassword) {
+      if (currentPassword !== currentUser.password) {
+        setProfileMsg({ type: 'err', text: 'La contraseña actual no es correcta.' });
+        return;
+      }
+      if (newPassword.length < 6) {
+        setProfileMsg({ type: 'err', text: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setProfileMsg({ type: 'err', text: 'Las contraseñas nuevas no coinciden.' });
+        return;
+      }
+      updates.password = newPassword;
+    }
+    const updated = updateUserProfile(currentUser.id, updates);
+    setCurrentUser(updated);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setProfileMsg({ type: 'ok', text: 'Perfil actualizado correctamente.' });
   };
 
   const handleSaveSettings = (e: React.FormEvent) => {
@@ -61,22 +110,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
     { id: 'leads', label: 'Leads Web', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg> },
     { id: 'sync', label: 'Sincronización', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> },
     { id: 'settings', label: 'Configuración', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+    { id: 'perfil', label: 'Mi Cuenta', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg> },
   ];
 
   return (
     <div className="flex min-h-[calc(100vh-6rem)] bg-slate-50/30 animate-in fade-in duration-500">
-      <aside className="w-72 bg-white border-r border-slate-100 p-8 space-y-4 hidden lg:block sticky top-24 h-[calc(100vh-6rem)]">
+      {/* Desktop sidebar */}
+      <aside className="w-72 bg-white border-r border-slate-100 p-8 space-y-4 hidden lg:flex flex-col sticky top-24 h-[calc(100vh-6rem)]">
         <div className="mb-10 flex items-center gap-4 px-4">
-          <img src={currentUser.avatar} className="w-10 h-10 rounded-xl shadow-sm border border-slate-100" alt="" />
+          <img src={avatarPreview || currentUser.avatar} className="w-10 h-10 rounded-xl shadow-sm border border-slate-100 object-cover" alt="" />
           <div className="min-w-0">
             <p className="font-black text-slate-900 text-sm truncate">{currentUser.name}</p>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{currentUser.role}</p>
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1 flex-1">
           {menuItems.map((item) => (
-            <button 
+            <button
               key={item.id}
               onClick={() => setActiveView(item.id as AdminView)}
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-[1.5rem] font-bold transition-all duration-300 ${activeView === item.id ? 'bg-brand-black text-white shadow-xl shadow-black/10' : 'text-brand-gray hover:bg-slate-50'}`}
@@ -87,8 +138,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
           ))}
         </div>
 
-        <div className="pt-8 border-t border-slate-100 space-y-3">
-          <button 
+        <div className="pt-8 border-t border-slate-100">
+          <button
             onClick={onLogout}
             className="w-full flex items-center justify-center gap-3 bg-slate-100 text-brand-gray px-6 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-brand-red/5 hover:text-brand-red transition-all"
           >
@@ -97,7 +148,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
         </div>
       </aside>
 
-      <main className="flex-1 p-8 md:p-12 overflow-y-auto">
+      {/* Mobile bottom nav */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-100 flex items-stretch shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveView(item.id as AdminView)}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-all ${activeView === item.id ? 'text-brand-red' : 'text-slate-400'}`}
+          >
+            {item.icon}
+            <span className="text-[9px] font-black uppercase tracking-wider leading-none">{item.label.split(' ')[0]}</span>
+          </button>
+        ))}
+      </nav>
+
+      <main className="flex-1 p-4 pb-24 md:p-8 lg:p-12 lg:pb-8 overflow-y-auto">
         {activeView === 'overview' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="flex justify-between items-end">
@@ -133,12 +198,27 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
 
         {activeView === 'leads' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
-            <div>
-              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Leads Recibidos</h2>
-              <p className="text-slate-400 font-medium">Consultas desde el formulario de contacto web.</p>
+            <div className="flex justify-between items-end">
+              <div>
+                <h2 className="text-4xl font-black text-slate-900 tracking-tight">Leads Recibidos</h2>
+                <p className="text-slate-400 font-medium">Consultas desde el formulario de contacto web.</p>
+              </div>
+              <button
+                onClick={() => setLeads(getLocalLeads())}
+                className="text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
+              >
+                Actualizar
+              </button>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-50">
+            {leads.length === 0 && (
+              <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-50 p-16 text-center">
+                <p className="text-4xl mb-4">📭</p>
+                <p className="font-black text-slate-400 text-lg">Aún no hay leads recibidos</p>
+                <p className="text-slate-300 text-sm mt-2">Los formularios completados en la web aparecerán aquí automáticamente.</p>
+              </div>
+            )}
+            {leads.length > 0 && <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-50">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest">
                   <tr>
@@ -184,7 +264,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div>}
           </div>
         )}
 
@@ -244,6 +324,111 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser, onLogout, 
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeView === 'perfil' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div>
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Mi Cuenta</h2>
+              <p className="text-slate-400 font-medium">Actualizá tu foto, nombre y contraseña.</p>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="max-w-2xl space-y-8">
+              {/* Avatar */}
+              <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-50 space-y-6">
+                <h3 className="text-lg font-black text-slate-900">Foto de Perfil</h3>
+                <div className="flex items-center gap-8">
+                  <div
+                    className="w-24 h-24 rounded-3xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {avatarPreview
+                      ? <img src={avatarPreview} alt="avatar" className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center text-3xl text-slate-300">👤</div>
+                    }
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-6 py-3 bg-slate-100 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-200 transition-all"
+                    >
+                      Subir foto
+                    </button>
+                    <p className="text-[10px] text-slate-400 mt-2">JPG, PNG. Máx. 2MB.</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Name / Username */}
+              <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-50 space-y-6">
+                <h3 className="text-lg font-black text-slate-900">Datos Personales</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">Nombre</label>
+                    <input
+                      type="text"
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-brand-black focus:ring-2 focus:ring-brand-red/10 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">Usuario</label>
+                    <input
+                      type="text"
+                      value={profileUsername}
+                      onChange={(e) => setProfileUsername(e.target.value)}
+                      className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-brand-black focus:ring-2 focus:ring-brand-red/10 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-50 space-y-6">
+                <h3 className="text-lg font-black text-slate-900">Cambiar Contraseña</h3>
+                <p className="text-sm text-slate-400 -mt-4">Dejá en blanco si no querés cambiarla.</p>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Contraseña Actual', value: currentPassword, set: setCurrentPassword },
+                    { label: 'Nueva Contraseña', value: newPassword, set: setNewPassword },
+                    { label: 'Confirmar Contraseña', value: confirmPassword, set: setConfirmPassword },
+                  ].map(({ label, value, set }) => (
+                    <div key={label} className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">{label}</label>
+                      <input
+                        type="password"
+                        value={value}
+                        onChange={(e) => set(e.target.value)}
+                        className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-brand-black focus:ring-2 focus:ring-brand-red/10 transition-all"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {profileMsg && (
+                <div className={`px-6 py-4 rounded-2xl text-sm font-bold ${profileMsg.type === 'ok' ? 'bg-emerald-50 text-emerald-700' : 'bg-brand-red/5 text-brand-red'}`}>
+                  {profileMsg.text}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-brand-black text-white px-8 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-red transition-all shadow-xl shadow-black/10"
+              >
+                Guardar Cambios
+              </button>
+            </form>
           </div>
         )}
 

@@ -13,6 +13,7 @@ import ServicesSection from './components/ServicesSection';
 import ContactSection from './components/ContactSection';
 import AboutUsSection from './components/AboutUsSection';
 import HeroBanner from './components/HeroBanner';
+import { getSiteContent } from './services/contentService';
 
 type ViewType = 'home' | 'services' | 'admin' | 'nosotros' | 'contacto';
 type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';
@@ -20,11 +21,13 @@ type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';
 const App: React.FC = () => {
   const [view, setView] = useState<ViewType>('home');
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [showMap, setShowMap] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [properties, setProperties] = useState<Property[]>(getCachedProperties());
   const [syncError, setSyncError] = useState<string>('');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [siteContent, setSiteContent] = useState<any>(null);
   
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<PropertyType | 'All'>('All');
@@ -36,6 +39,12 @@ const App: React.FC = () => {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    getSiteContent().then(content => {
+      if (content) setSiteContent(content);
+    });
+  }, []);
 
   useEffect(() => {
     const cached = getCachedProperties();
@@ -133,7 +142,10 @@ const App: React.FC = () => {
       const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
       const matchesRooms = roomsFilter === 'All' || p.features.rooms >= Number(roomsFilter);
       
-      return matchesSearch && matchesType && matchesOp && matchesProv && matchesDept && matchesLoc && matchesAmenities && matchesPrice && matchesRooms && p.status === 'active';
+      const hasTitle = p.title && p.title !== 'Sin título';
+      const hasImages = p.images && p.images.length > 0;
+
+      return hasTitle && hasImages && matchesSearch && matchesType && matchesOp && matchesProv && matchesDept && matchesLoc && matchesAmenities && matchesPrice && matchesRooms && p.status === 'active';
     });
 
     return result.sort((a, b) => {
@@ -171,7 +183,7 @@ const App: React.FC = () => {
                 <div class="p-1 min-w-[150px]">
                   <img src="${p.images[0]?.url}" class="w-full h-24 object-cover rounded-xl mb-2"/>
                   <h4 class="font-black text-slate-900 text-xs leading-tight mb-1">${p.title}</h4>
-                  <p class="text-brand-red font-black text-xs">${p.currency} ${p.price.toLocaleString()}</p>
+                  <p class="text-brand-red font-black text-xs">${p.currency} ${p.price.toLocaleString('es-AR')}</p>
                 </div>
               `);
             return marker;
@@ -224,8 +236,8 @@ const App: React.FC = () => {
 
       return (
         <div className="max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <button 
-            onClick={() => setSelectedPropertyId(null)}
+          <button
+            onClick={() => { setSelectedPropertyId(null); setLightboxIndex(null); }}
             className="group flex items-center gap-2 text-brand-red font-bold mb-8 hover:text-red-800 transition-colors"
           >
             <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,43 +246,87 @@ const App: React.FC = () => {
             Volver al buscador
           </button>
 
+          {/* Título arriba de las fotos */}
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.operation}</span>
+              <span className="bg-brand-black text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.type}</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-brand-black mb-3 tracking-tight leading-tight">{selectedProperty.title}</h1>
+            <p className="text-xl text-brand-gray flex items-center gap-2 font-light">
+              <svg className="w-5 h-5 text-brand-red flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+              {selectedProperty.location.address}, {selectedProperty.neighborhood || selectedProperty.location.city}
+            </p>
+          </div>
+
           <div className="mb-12">
             <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-3 h-[600px] rounded-[2rem] overflow-hidden shadow-2xl">
-              <div className="col-span-2 row-span-2 relative group cursor-pointer overflow-hidden">
+              <div className="col-span-2 row-span-2 relative group cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(0)}>
                 <img src={displayImages[0]?.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Principal" />
               </div>
-              <div className="relative group cursor-pointer overflow-hidden"><img src={displayImages[1]?.url} className="w-full h-full object-cover" alt="" /></div>
-              <div className="relative group cursor-pointer overflow-hidden"><img src={displayImages[2]?.url} className="w-full h-full object-cover" alt="" /></div>
-              <div className="relative group cursor-pointer overflow-hidden"><img src={displayImages[3]?.url} className="w-full h-full object-cover" alt="" /></div>
-              <div className="relative group cursor-pointer overflow-hidden">
-                <img src={displayImages[4]?.url} className="w-full h-full object-cover" alt="" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <span className="text-white font-black text-xl">+ {selectedProperty.images.length > 5 ? selectedProperty.images.length - 4 : 'Ver todas'}</span>
-                </div>
+              <div className="relative group cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(1)}><img src={displayImages[1]?.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" /></div>
+              <div className="relative group cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(2)}><img src={displayImages[2]?.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" /></div>
+              <div className="relative group cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(3)}><img src={displayImages[3]?.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" /></div>
+              <div className="relative group cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(4)}>
+                <img src={displayImages[4]?.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                {selectedProperty.images.length > 5 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <span className="text-white font-black text-xl">+{selectedProperty.images.length - 4} fotos</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="md:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth custom-scrollbar pb-4 -mx-4 px-4">
-              {displayImages.map((img, idx) => (
-                <div key={idx} className="min-w-[85vw] aspect-[4/3] snap-center rounded-[1.5rem] overflow-hidden bg-brand-light shadow-xl">
+              {selectedProperty.images.map((img, idx) => (
+                <div key={idx} className="min-w-[85vw] aspect-[4/3] snap-center rounded-[1.5rem] overflow-hidden bg-brand-light shadow-xl cursor-pointer" onClick={() => setLightboxIndex(idx)}>
                    <img src={img.url} className="w-full h-full object-cover" alt="" />
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2 space-y-12">
-              <div>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.operation}</span>
-                  <span className="bg-brand-black text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{selectedProperty.type}</span>
-                </div>
-                <h1 className="text-5xl font-black text-brand-black mb-4 tracking-tight leading-tight">{selectedProperty.title}</h1>
-                <p className="text-2xl text-brand-gray flex items-center gap-3 font-light">
-                   <svg className="w-6 h-6 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
-                  {selectedProperty.location.address}, {selectedProperty.neighborhood || 'Barrio'}
-                </p>
+          {/* Lightbox */}
+          {lightboxIndex !== null && (
+            <div
+              className="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center"
+              onClick={() => setLightboxIndex(null)}
+            >
+              <button
+                className="absolute top-6 right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-all z-10"
+                onClick={() => setLightboxIndex(null)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+
+              <button
+                className="absolute left-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-4 transition-all z-10"
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(i => i !== null && i > 0 ? i - 1 : selectedProperty.images.length - 1); }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+
+              <img
+                src={selectedProperty.images[lightboxIndex]?.url}
+                className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+                alt=""
+                onClick={(e) => e.stopPropagation()}
+              />
+
+              <button
+                className="absolute right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-4 transition-all z-10"
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(i => i !== null && i < selectedProperty.images.length - 1 ? i + 1 : 0); }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+
+              <div className="absolute bottom-6 text-white/60 text-sm font-bold tracking-widest">
+                {lightboxIndex + 1} / {selectedProperty.images.length}
               </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2">
               <div className="prose prose-slate max-w-none">
                 <h3 className="text-2xl font-black text-brand-black mb-6">Descripción</h3>
                 <p className="text-brand-gray text-lg leading-relaxed whitespace-pre-line">{selectedProperty.description}</p>
@@ -284,7 +340,10 @@ const App: React.FC = () => {
 
     return (
       <div className="animate-in fade-in duration-700">
-        <HeroBanner onNavigate={(v) => { setView(v as ViewType); setSelectedPropertyId(null); }} />
+        <HeroBanner 
+          onNavigate={(v) => { setView(v as ViewType); setSelectedPropertyId(null); }} 
+          banners={siteContent?.banners}
+        />
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="space-y-4 mb-12">
           <div className="bg-white p-4 md:p-6 rounded-[3rem] shadow-2xl shadow-brand-red/5 border border-slate-100">
@@ -374,9 +433,9 @@ const App: React.FC = () => {
                     <div className="flex justify-between items-center px-2">
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rango de Precio (USD)</span>
                       <div className="flex gap-2 text-xs font-black text-brand-red">
-                        <span>${priceRange[0].toLocaleString()}</span>
+                        <span>${priceRange[0].toLocaleString('es-AR')}</span>
                         <span className="text-slate-300">-</span>
-                        <span>${priceRange[1].toLocaleString()}</span>
+                        <span>${priceRange[1].toLocaleString('es-AR')}</span>
                       </div>
                     </div>
                     <div className="px-4 py-6 bg-slate-50 rounded-2xl">
@@ -456,11 +515,11 @@ const App: React.FC = () => {
       if (!currentUser) {
         return <Login onLogin={handleLogin} onCancel={() => setView('home')} />;
       }
-      return <AdminDashboard currentUser={currentUser} onLogout={handleLogout} properties={properties} setProperties={setProperties} />;
+      return <AdminDashboard currentUser={currentUser!} onLogout={handleLogout} setCurrentUser={setCurrentUser} properties={properties} setProperties={setProperties} />;
     }
-    if (view === 'services') return <ServicesSection />;
-    if (view === 'contacto') return <ContactSection />;
-    if (view === 'nosotros') return <AboutUsSection />;
+    if (view === 'services') return <ServicesSection content={siteContent} />;
+    if (view === 'contacto') return <ContactSection content={siteContent} />;
+    if (view === 'nosotros') return <AboutUsSection content={siteContent} />;
     return renderHome();
   };
 

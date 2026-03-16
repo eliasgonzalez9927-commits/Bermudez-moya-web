@@ -54,7 +54,7 @@ const StickyContactSidebar: React.FC<StickyContactSidebarProps> = ({ property })
       <div className="mb-6">
         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Precio de {property.operation}</p>
         <p className="text-4xl font-black text-brand-red">
-          {property.currency} {property.price.toLocaleString()}
+          {property.currency} {property.price.toLocaleString('es-AR')}
         </p>
       </div>
 

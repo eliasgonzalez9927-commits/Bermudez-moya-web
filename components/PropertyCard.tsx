@@ -30,7 +30,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onClick, compact 
         </div>
         <div className="flex flex-col justify-center min-w-0">
           <h4 className="text-xs font-black text-slate-900 truncate mb-1 leading-tight">{property.title}</h4>
-          <p className="text-brand-red font-black text-sm mb-1">{property.currency} {property.price.toLocaleString()}</p>
+          <p className="text-brand-red font-black text-sm mb-1">{property.currency} {property.price.toLocaleString('es-AR')}</p>
           <div className="flex gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             <span>{property.features.rooms} Amb</span>
             <span>{property.features.m2Total} m²</span>
@@ -91,7 +91,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onClick, compact 
             <p className="text-xs font-bold text-brand-gray uppercase tracking-widest truncate">{property.neighborhood}, {property.location.city}</p>
           </div>
           <p className="text-2xl font-black text-brand-red whitespace-nowrap">
-            {property.currency} {property.price.toLocaleString()}
+            {property.currency} {property.price.toLocaleString('es-AR')}
           </p>
         </div>
         

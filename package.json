@@ -11,15 +11,21 @@
   },
   "dependencies": {
     "@google/genai": "^1.44.0",
+    "@sanity/client": "^7.17.0",
+    "@sanity/image-url": "^2.0.3",
+    "@types/nodemailer": "^7.0.11",
     "express": "^5.2.1",
+    "nodemailer": "^8.0.2",
     "rc-slider": "^11.1.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
+    "resend": "^6.9.3",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@vercel/node": "^5.6.15",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

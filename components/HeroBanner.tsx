@@ -4,26 +4,28 @@ import { BANNERS } from '../constants';
 
 interface HeroBannerProps {
   onNavigate: (view: any) => void;
+  banners?: any[];
 }
 
-const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigate }) => {
+const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigate, banners }) => {
   const [current, setCurrent] = useState(0);
+  const bannersToShow = banners && banners.length > 0 ? banners : BANNERS;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev === BANNERS.length - 1 ? 0 : prev + 1));
+      setCurrent((prev) => (prev === bannersToShow.length - 1 ? 0 : prev + 1));
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [bannersToShow.length]);
 
-  const next = () => setCurrent((prev) => (prev === BANNERS.length - 1 ? 0 : prev + 1));
-  const prev = () => setCurrent((prev) => (prev === 0 ? BANNERS.length - 1 : prev - 1));
+  const next = () => setCurrent((prev) => (prev === bannersToShow.length - 1 ? 0 : prev + 1));
+  const prev = () => setCurrent((prev) => (prev === 0 ? bannersToShow.length - 1 : prev - 1));
 
   return (
     <div className="relative w-full h-[300px] md:h-[500px] overflow-hidden">
-      {BANNERS.map((banner, index) => (
+      {bannersToShow.map((banner, index) => (
         <div
-          key={banner.id}
+          key={banner._id || banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
@@ -32,7 +34,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigate }) => {
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-[5s] scale-105"
             style={{ 
-              backgroundImage: `url(${banner.image})`,
+              backgroundImage: `url(${banner.imagen || banner.image})`,
               transform: index === current ? 'scale(1)' : 'scale(1.05)'
             }}
           />
@@ -43,16 +45,16 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigate }) => {
           {/* Content */}
           <div className="relative z-20 h-full flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-white text-3xl md:text-6xl font-black mb-4 tracking-tighter animate-in fade-in slide-in-from-bottom-4 duration-700">
-              {banner.title}
+              {banner.titulo || banner.title}
             </h2>
             <p className="text-white/80 text-lg md:text-xl font-light mb-8 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              {banner.subtitle}
+              {banner.subtitulo || banner.subtitle}
             </p>
             <button
-              onClick={() => onNavigate(banner.ctaAction)}
+              onClick={() => onNavigate(banner.ctaAccion || banner.ctaAction)}
               className="bg-brand-red text-white px-8 py-4 rounded-full font-black uppercase tracking-widest hover:bg-[#a01520] transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-brand-red/20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200"
             >
-              {banner.ctaText}
+              {banner.ctaTexto || banner.ctaText}
             </button>
           </div>
         </div>
@@ -78,7 +80,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigate }) => {
 
       {/* Dots */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {BANNERS.map((_, index) => (
+        {bannersToShow.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrent(index)}
